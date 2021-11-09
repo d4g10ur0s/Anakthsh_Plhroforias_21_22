@@ -7,6 +7,28 @@ matching_query = { "query_string": {
                     "query" : None
                     }
                  }
+class mBook:
+    isbn = None
+    book_title = None
+    book_author = None
+    year_pub = None
+    pub = None
+    summ = None
+    metric = 0
+
+    def __init__(self,isbn,book_title,book_author,year_pub,pub,summ):
+        self.isbn = isbn
+        self.book_title = book_title
+        self.book_author = book_author
+        self.year_pub = year_pub
+        self.pub = pub
+        self.summ = summ
+    #olh h plhroforia se mia lista
+    def get_info(self):
+        return [self.isbn,self.book_title,self.book_author,self.year_pub,self.pub,self.summ,self.metric]
+    #to metriko vasei tou user pou exw id
+    def set_metric(self,metric):
+        self.metric = metric
 
 def main():
 
