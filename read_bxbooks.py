@@ -42,7 +42,7 @@ def main():
         mvar = str(input("Give a string : "))
         matching_query["query_string"]["query"] = str(mvar)
         #searching ...
-        results = es.search(index="bx_books_2",query=matching_query)
+        results = es.search(index="bx_books_2",query=matching_query,size = 10000)
         mcounter = 0 #gia na apari8mhsw to plh8os
         results = results["hits"]["hits"]#ta apotelesmata moy
         #pairnw ta kleidia
