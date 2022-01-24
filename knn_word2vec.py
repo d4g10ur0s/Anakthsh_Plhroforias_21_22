@@ -1,4 +1,4 @@
-from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier as knn
 from sklearn.model_selection import train_test_split
 
 
@@ -89,8 +89,8 @@ def embed(uid):
     #np.all(np.isfinite(df_input))
     #X_train, X_test, y_train, y_test = train_test_split(X, y,shuffle=False)
     df_input=df_input.transpose()
-    log = LogisticRegression(multi_class = 'multinomial')
-    log.fit(df_input, myratings)
+    m_knn = knn(n_neighbors = 5, weights='distance')
+    m_knn.fit(df_input, myratings)
 
 
     processed_sentences = []
@@ -114,8 +114,8 @@ def embed(uid):
         print(".")
         df_output.fillna(value=0.0,inplace=True)
         df_output[str(i)].replace(to_replace=0,value=df_output[str(i)].mean(),inplace=True )
-    
-    res = log.predict(df_output.transpose())
+
+    res = m_knn.predict(df_output.transpose())
     print(res)
 
 def list2string(s):

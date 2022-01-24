@@ -1,4 +1,4 @@
-from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier as knn
 from sklearn.model_selection import train_test_split
 
 
@@ -34,7 +34,9 @@ def embed(uid):
     mtuple= []
     myratings = []
     i = 0
+
     for isbn in ratings_df.isbn:
+
         try:
             i+=1
             summaries.append(list2string(books_df[books_df['isbn']==str(isbn)].summary.values))
@@ -64,7 +66,9 @@ def embed(uid):
     '''
     model = w2v.load('readyvocab.model')
     processed_sentences = []
+    rated_books = 0
     for sentence in mtuple:
+        rated_books+=1
         processed_sentences.append(gensim.utils.simple_preprocess(sentence[1]))
 
         # print(*processed_sentences, sep='\n')
@@ -79,25 +83,9 @@ def embed(uid):
                 vectors[str(i)].append(np.nan)
         i+=1
 
-    df_input =  pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in vectors.items() ]))
-    for i in range(0,len(vectors)):
-        print(df_input[str(i)])
-        df_input.fillna(value=0.0,inplace=True)
-        df_input[str(i)].replace(to_replace=0,value=df_input[str(i)].mean(),inplace=True )
-        print(df_input[str(i)])
-    #np.any(np.isnan(df_input))
-    #np.all(np.isfinite(df_input))
-    #X_train, X_test, y_train, y_test = train_test_split(X, y,shuffle=False)
-    df_input=df_input.transpose()
-    log = LogisticRegression(multi_class = 'multinomial')
-    log.fit(df_input, myratings)
-
-
     processed_sentences = []
-    for sentence in books_df.summary:
+    for sentence in books_df.summary[:300]:
         processed_sentences.append(gensim.utils.simple_preprocess(sentence))
-    vectors = {}
-    i = 0
     for v in processed_sentences:
         print("Processing Words...")
         vectors[str(i)] = []
@@ -109,13 +97,24 @@ def embed(uid):
             except:
                 vectors[str(i)].append(np.nan)
         i+=1
-    df_output =  pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in vectors.items() ]))
-    for i in range(0,len(vectors)):
-        print(".")
-        df_output.fillna(value=0.0,inplace=True)
-        df_output[str(i)].replace(to_replace=0,value=df_output[str(i)].mean(),inplace=True )
-    
-    res = log.predict(df_output.transpose())
+
+    df_input =  pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in vectors.items() ]))
+    df_input.fillna(value=0.0,inplace=True)
+
+    for j in range(0,len(vectors)):
+        print(df_input[str(j)])
+        df_input[str(j)].replace(to_replace=0,value=df_input[str(j)].mean(),inplace=True )
+        print(df_input[str(j)])
+    #np.any(np.isnan(df_input))
+    #np.all(np.isfinite(df_input))
+    #X_train, X_test, y_train, y_test = train_test_split(X, y,shuffle=False)
+    df_input=df_input.transpose()
+
+    m_knn = knn(n_neighbors = rated_books//11 + 1, weights='distance')
+
+    m_knn.fit(df_input[:rated_books], myratings)
+    res = m_knn.predict(df_input[rated_books:])
+
     print(res)
 
 def list2string(s):

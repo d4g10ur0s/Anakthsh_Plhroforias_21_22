@@ -1,18 +1,24 @@
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
 
 
-from gensim.models import Word2Vec as w2v
+import gensim
 import gensim.downloader as api
+from gensim.models import Word2Vec as w2v
+
 import inspect
+
 import logging
 
 import warnings
+
 import numpy as np
+
 from sklearn import *
+
 import os
-import gensim
+
+
 import pandas as pd
+
 import matplotlib.pyplot as plt
 
 
@@ -88,35 +94,12 @@ def embed(uid):
     #np.any(np.isnan(df_input))
     #np.all(np.isfinite(df_input))
     #X_train, X_test, y_train, y_test = train_test_split(X, y,shuffle=False)
-    df_input=df_input.transpose()
-    log = LogisticRegression(multi_class = 'multinomial')
-    log.fit(df_input, myratings)
+    '''ta exw ola ws ka8eta dianusmata'''
 
 
-    processed_sentences = []
-    for sentence in books_df.summary:
-        processed_sentences.append(gensim.utils.simple_preprocess(sentence))
-    vectors = {}
-    i = 0
-    for v in processed_sentences:
-        print("Processing Words...")
-        vectors[str(i)] = []
-        print("Processing Vectors...")
-        for k in v:
-            print(".")
-            try:
-                vectors[str(i)].append(model.wv[k].mean())
-            except:
-                vectors[str(i)].append(np.nan)
-        i+=1
-    df_output =  pd.DataFrame(dict([ (k,pd.Series(v)) for k,v in vectors.items() ]))
-    for i in range(0,len(vectors)):
-        print(".")
-        df_output.fillna(value=0.0,inplace=True)
-        df_output[str(i)].replace(to_replace=0,value=df_output[str(i)].mean(),inplace=True )
-    
-    res = log.predict(df_output.transpose())
-    print(res)
+def my_kmeans(k = 2, df):
+    #arxikopoihsh kentrweidwn
+    my_centroids = pd.DataFrame(np.random.rand(,))
 
 def list2string(s):
     strl = ""
